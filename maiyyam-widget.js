@@ -6,7 +6,6 @@
     #maiyyam-widget-container { font-family:var(--font); z-index: 99999; position: fixed; bottom: 0; right: 0; }
     #maiyyam-widget-container * { box-sizing: border-box; }
     
-    /* UPDATED: Increased sizes to match your original look */
     .chat-launcher{ position:fixed; right:22px; bottom:22px; width:60px;height:60px;border-radius:50%; background:var(--brand); box-shadow:var(--shadow); display:grid; place-items:center; cursor:pointer; color:#fff; border:none; z-index:2147483647; }
     .chat-launcher svg{ width:28px;height:28px; display:block; }
     .chat-launcher[aria-expanded="true"] .icon-open{ display:none; }
@@ -22,17 +21,18 @@
     .chat-panel.open{ display:flex; }
     @media (max-width:520px){ .chat-panel{ width:var(--w-m); max-width:var(--w-m); right:16px; left:16px; } }
 
-    /* UPDATED: Increased Height (72px) and Logo Size (38px) */
     .chat-header{ background:var(--brand); color:#fff; height:72px; padding:8px 16px; display:flex; align-items:center; flex-shrink: 0; }
     .chat-header img{ height:38px; object-fit:contain; }
     .spacer{ flex:1; }
     .kebab{ width:34px; height:34px; border-radius:8px; border:none; color:#fff; background:rgba(255,255,255,.16); cursor:pointer; display:grid; place-items:center; }
     .kebab svg{ width:18px; height:18px; }
     
-    /* UPDATED: Menu Top position adjusted for taller header */
-    .menu{ position:absolute; right:16px; top:72px; background:#1f2937; color:#e5e7eb; border-radius:12px; padding:6px; box-shadow:var(--shadow); display:none; z-index:2147483648; width:240px; }
+    /* MENU ADJUSTMENTS */
+    .menu{ position:absolute; right:16px; top:72px; background:#1f2937; color:#e5e7eb; border-radius:12px; padding:6px; box-shadow:var(--shadow); display:none; z-index:2147483648; width:260px; }
     .menu.open{ display:block; }
-    .menu-item{ display:flex; gap:10px; align-items:center; padding:12px; border-radius:8px; cursor:pointer; font-size: 14px; }
+    
+    /* UPDATED: Increased font-size to 16px and added font-weight */
+    .menu-item{ display:flex; gap:12px; align-items:center; padding:12px; border-radius:8px; cursor:pointer; font-size: 16px; font-weight: 500; }
     .menu-item:hover{ background:#374151; }
     .menu-hr{ height:1px; background:#374151; margin:4px 6px; }
 
