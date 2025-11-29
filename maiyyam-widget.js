@@ -1,28 +1,26 @@
 (function() {
-  const HOST_ID = 'maiyyam-widget-host';
-  if (document.getElementById(HOST_ID)) return; // Prevent duplicates
+  // Prevent duplicate loads
+  if (document.getElementById('maiyyam-widget-host')) return;
 
-  // Create the Host Element
+  // 1. Create Host Element (The Container)
   const host = document.createElement('div');
-  host.id = HOST_ID;
+  host.id = 'maiyyam-widget-host';
   host.style.position = 'fixed';
-  host.style.bottom = '22px';
-  host.style.right = '22px';
-  host.style.zIndex = '2147483647'; // Max z-index
-  host.style.width = '0';
-  host.style.height = '0';
+  host.style.bottom = '0';
+  host.style.right = '0';
+  host.style.zIndex = '2147483647'; // Max z-index to stay on top
   document.body.appendChild(host);
 
-  // Attach Shadow DOM (The Force Field)
+  // 2. Attach Shadow DOM (The Force Field)
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // Add Font Link (Baloo Thambi 2)
+  // 3. Inject Font (Must be in main head to load correctly)
   const fontLink = document.createElement('link');
   fontLink.href = 'https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@600&display=swap';
   fontLink.rel = 'stylesheet';
-  document.head.appendChild(fontLink); // Fonts must be in head to load
+  document.head.appendChild(fontLink);
 
-  // Define Styles (Scoped inside Shadow DOM)
+  // 4. Widget Styles (Scoped inside Shadow DOM)
   const style = document.createElement('style');
   style.textContent = `
     :host {
@@ -45,7 +43,7 @@
 
     /* Launcher */
     .chat-launcher {
-      position: absolute; bottom: 0; right: 0;
+      position: fixed; right: 22px; bottom: 22px;
       width: 60px; height: 60px; border-radius: 50%;
       background: var(--brand); box-shadow: var(--shadow);
       display: grid; place-items: center; cursor: pointer;
@@ -54,6 +52,7 @@
     }
     .chat-launcher:hover { transform: scale(1.05); }
     .chat-launcher svg { width: 28px; height: 28px; display: block; }
+    
     .icon-open { display: block; }
     .icon-close { display: none; }
     .chat-launcher.open .icon-open { display: none; }
@@ -61,10 +60,11 @@
 
     /* Hint */
     .hint {
-      position: absolute; bottom: 74px; right: 0;
+      position: fixed; bottom: 92px; right: 22px;
       background: #0f172a; color: #fff; font-family: var(--font); font-size: 14px;
       padding: 10px 30px 10px 12px; border-radius: 12px;
       box-shadow: var(--shadow); display: none; white-space: nowrap;
+      z-index: 1200;
     }
     .hint.show { display: block; animation: fadein .22s ease-out; }
     .hint::after {
@@ -82,23 +82,23 @@
 
     /* Panel */
     .chat-panel {
-      position: absolute; bottom: 74px; right: 0;
-      width: var(--w); height: var(--h);
+      position: fixed; right: 22px; bottom: 96px;
+      width: var(--w); max-width: var(--w); height: var(--h);
       background: var(--panel); border-radius: var(--radius);
       box-shadow: var(--shadow); overflow: hidden;
       display: none; flex-direction: column;
-      border: 1px solid #f1f5f9; font-family: var(--font);
+      border: 1px solid #f1f5f9; font-family: var(--font); z-index: 1100;
     }
     .chat-panel.open { display: flex; }
     
     @media (max-width: 520px) {
-      .chat-panel { width: var(--w-m); right: -6px; bottom: 80px; height: 70vh; }
+      .chat-panel { width: var(--w-m); right: 16px; bottom: 96px; }
     }
 
     /* Header */
     .chat-header {
       background: var(--brand); color: #fff; height: 56px;
-      padding: 0 16px; display: flex; align-items: center; flex-shrink: 0;
+      padding: 0 16px; display: flex; align-items: center; flex-shrink: 0; position: relative;
     }
     .spacer { flex: 1; }
     .kebab {
@@ -112,7 +112,7 @@
     .menu {
       position: absolute; top: 60px; right: 16px; width: 220px;
       background: #1f2937; color: #e5e7eb; border-radius: 12px;
-      padding: 6px; box-shadow: var(--shadow); display: none; z-index: 100;
+      padding: 6px; box-shadow: var(--shadow); display: none; z-index: 1300;
     }
     .menu.open { display: block; }
     .menu-item { display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; }
@@ -125,15 +125,15 @@
     .row.bot { justify-content: flex-start; }
     .row.user { justify-content: flex-end; }
 
-    /* Avatar (Tiny 28px) */
-    .avatar { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex: 0 0 auto; background: #fff; }
+    /* Avatar (28px) */
+    .avatar { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex: 0 0 auto; background: #fff; border: 1px solid #e5e7eb; }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .content { max-width: var(--bubblew); }
     /* Name (Baloo Thambi 2) */
     .name { font-family: var(--font-tamil); font-size: 13px; font-weight: 600; color: #9ca3af; margin: 0 0 2px 6px; }
     
-    .bubble { padding: 12px 14px; border-radius: 14px; line-height: 1.45; font-size: 14px; word-wrap: break-word; white-space: pre-wrap; }
+    .bubble { padding: 12px 14px; border-radius: 14px; line-height: 1.45; font-size: 14px; word-wrap: break-word; white-space: pre-wrap; box-shadow: 0 1px 0 rgba(0,0,0,.25); }
     .bot .bubble { background: #111f2c; color: #dbeafe; border-top-left-radius: 8px; }
     .user .bubble { background: var(--brand); color: #fff; border-top-right-radius: 8px; }
 
@@ -146,36 +146,40 @@
     /* Input */
     .chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #111827; background: #0b0f14; }
     .chat-input input { flex: 1; padding: 12px 14px; border: 2px solid var(--brand); border-radius: 12px; font-size: 14px; background: #0f172a; color: #fff; outline: none; font-family: var(--font); }
-    .chat-input button { background: var(--brand); color: #fff; border: none; padding: 0 16px; border-radius: 12px; cursor: pointer; display: grid; place-items: center; }
-    .chat-input button svg { width: 18px; height: 18px; }
+    .chat-input button { background: var(--brand); color: #fff; border: none; padding: 0 16px; border-radius: 12px; cursor: pointer; display: grid; place-items: center; font-weight: 700; }
+    .chat-input button[disabled] { opacity: .6; cursor: not-allowed; }
+    .chat-input button svg { width: 18px; height: 18px; display: block; }
     .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.5); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to{ transform: rotate(360deg); } }
 
     /* Modal */
-    .modal { position: absolute; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 200; height: 100%; width: 100%; border-radius: var(--radius); }
+    .modal { position: absolute; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 2000; height: 100%; width: 100%; }
     .modal.open { display: flex; }
-    .modal-card { width: 90%; background: #111827; color: #e5e7eb; border-radius: 14px; padding: 14px; max-height: 80%; display:flex; flex-direction:column; }
-    .modal-h { font-weight: 800; margin-bottom: 10px; }
-    .list { overflow-y: auto; margin-top: 8px; flex:1; }
-    .conv { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: 10px; background: #1f2937; margin-bottom: 6px; }
-    .conv .title { font-weight: 700; font-size: 13px; }
-    .conv .meta { font-size: 11px; color: #9ca3af; }
-    .btn { background: #374151; color: #e5e7eb; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 12px; margin-left: 4px; }
+    .modal-card { width: min(520px, 92vw); background: #111827; color: #e5e7eb; border-radius: 14px; padding: 14px; box-shadow: var(--shadow); }
+    .modal-h { font-weight: 800; margin: 4px 0 10px 2px; }
+    .list { max-height: 50vh; overflow: auto; margin-top: 8px; }
+    .conv { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: 10px; }
+    .conv:nth-child(odd) { background: #1f2937; }
+    .conv .title { font-weight: 700; }
+    .conv .meta { font-size: 12px; color: #9ca3af; }
+    .conv .actions { display: flex; gap: 8px; }
+    .btn { background: #374151; color: #e5e7eb; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; }
+    .btn:hover { background: #4b5563; }
 
     /* Polls */
     .poll { background: #0b1220; border: 1px solid #1f2a44; border-radius: 14px; padding: 14px; margin-top: 6px; }
-    .poll-title { font-weight: 700; margin-bottom: 10px; color: #cfe3ff; }
-    .poll-btn { width: 100%; text-align: left; background: #122034; color: #e5edff; border: 1px solid #20324f; border-radius: 12px; padding: 12px 14px; margin: 6px 0; cursor: pointer; font-family: inherit; }
+    .poll-title { font-weight: 700; margin: 4px 6px 10px; color: #cfe3ff; }
+    .poll-btn { width: 100%; text-align: left; background: #122034; color: #e5edff; border: 1px solid #20324f; border-radius: 12px; padding: 12px 14px; margin: 10px 0; cursor: pointer; font-family: inherit; }
     .poll-btn:hover { background: #162742; }
   `;
   shadow.appendChild(style);
 
-  // Define HTML
+  // 5. HTML Structure
   const container = document.createElement('div');
   container.innerHTML = `
     <button class="chat-launcher" id="launcher">
-      <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8z"/></svg>
-      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6l-12 12"/></svg>
+      <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8z"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M6 6l12 12M18 6l-12 12"/></svg>
     </button>
 
     <div class="hint" id="hint">Hi there! Need clarity? <div class="hint-close" id="hintClose">×</div></div>
@@ -193,14 +197,14 @@
       <div class="chat-body" id="body"></div>
       <form class="chat-input" id="form">
         <input id="input" placeholder="Type your message..." autocomplete="off" />
-        <button type="submit" id="sendBtn"><svg id="sendIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg></button>
+        <button type="submit" id="sendBtn"><svg id="sendIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M22 2L11 13" /><path stroke-width="2" d="M22 2l-7 20-4-9-9-4 20-7z" /></svg></button>
       </form>
       
       <div class="modal" id="prevModal">
         <div class="modal-card">
           <div class="modal-h">Previous Conversations</div>
           <div class="list" id="convList"></div>
-          <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+          <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
             <button class="btn" id="clearAll">Clear All</button>
             <button class="btn" id="closeModal">Close</button>
           </div>
@@ -210,18 +214,17 @@
   `;
   shadow.appendChild(container);
 
-  // --- LOGIC ---
+  // 6. Logic
   const WEBHOOK_URL = 'https://aiagent61999.app.n8n.cloud/webhook/de779a9c-9554-41ca-b95b-446b396b8846';
-  // IMPORTANT: Since this script runs on the client site, "avatar.jpeg" must be a full URL.
-  // For now, I'm using a placeholder. You MUST replace this with the public URL of your 'avatar.jpeg'
-  // Example: 'https://your-website.com/images/avatar.jpeg' or the Cloudfront link if you have one.
-  // Since we are fixing the GitHub file, I will leave it generic for you to paste the URL.
-  const LOGO = 'https://dme2wmiz2suov.cloudfront.net/Institution(3815)/Logo/2642439-Group_21.png'; // Fallback to Maiyyam logo if you don't have a URL for the new avatar yet.
+  
+  // !!! UPDATE THIS LINK TO YOUR PUBLIC AVATAR URL ON GITHUB !!!
+  const LOGO = 'avatar.jpeg'; 
   
   const STORE_KEY = 'maiyyam_conversations_v1';
   const CONFIRM_RE = /(your counselling appointment is confirmed|your appointment has been rescheduled|we look forward to seeing you at maiyyam edtech|appointment (?:has been )?(?:confirmed|booked|scheduled))/i;
   const HANDOFF_DELAY_MS = 1500;
 
+  // Helper to select from shadow DOM
   const get = (id) => shadow.getElementById(id);
   const panel = get('panel');
   const launcher = get('launcher');
