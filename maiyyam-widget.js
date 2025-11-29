@@ -1,104 +1,189 @@
 (function() {
-  // 1. INJECT STYLES
+  const HOST_ID = 'maiyyam-widget-host';
+  if (document.getElementById(HOST_ID)) return; // Prevent duplicates
+
+  // Create the Host Element
+  const host = document.createElement('div');
+  host.id = HOST_ID;
+  host.style.position = 'fixed';
+  host.style.bottom = '22px';
+  host.style.right = '22px';
+  host.style.zIndex = '2147483647'; // Max z-index
+  host.style.width = '0';
+  host.style.height = '0';
+  document.body.appendChild(host);
+
+  // Attach Shadow DOM (The Force Field)
+  const shadow = host.attachShadow({ mode: 'open' });
+
+  // Add Font Link (Baloo Thambi 2)
+  const fontLink = document.createElement('link');
+  fontLink.href = 'https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@600&display=swap';
+  fontLink.rel = 'stylesheet';
+  document.head.appendChild(fontLink); // Fonts must be in head to load
+
+  // Define Styles (Scoped inside Shadow DOM)
   const style = document.createElement('style');
-  style.innerHTML = `
-    :root { --brand:#d9346d; --text:#e5e7eb; --muted:#1f2937; --bg:#0b0f14; --panel:#ffffff; --radius:16px; --shadow:0 18px 50px rgba(0,0,0,.18); --w:400px; --w-m:calc(100vw - 32px); --h:60vh; --bubblew:82%; --font:"Inter","Poppins","Helvetica Neue",Arial,sans-serif; }
-    #maiyyam-widget-container { font-family:var(--font); z-index: 99999; position: fixed; bottom: 0; right: 0; }
-    #maiyyam-widget-container * { box-sizing: border-box; }
+  style.textContent = `
+    :host {
+      --brand: #ed3c75;
+      --text: #e5e7eb;
+      --muted: #1f2937;
+      --bg: #0b0f14;
+      --panel: #ffffff;
+      --radius: 16px;
+      --shadow: 0 18px 50px rgba(0,0,0,.18);
+      --w: 400px;
+      --w-m: calc(100vw - 32px);
+      --h: 60vh;
+      --bubblew: 82%;
+      --font: "Inter", "Poppins", "Helvetica Neue", Arial, sans-serif;
+      --font-tamil: 'Baloo Thambi 2', cursive, sans-serif;
+    }
     
-    .chat-launcher{ position:fixed; right:22px; bottom:22px; width:60px;height:60px;border-radius:50%; background:var(--brand); box-shadow:var(--shadow); display:grid; place-items:center; cursor:pointer; color:#fff; border:none; z-index:2147483647; }
-    .chat-launcher svg{ width:28px;height:28px; display:block; }
-    .chat-launcher[aria-expanded="true"] .icon-open{ display:none; }
-    .chat-launcher[aria-expanded="false"] .icon-close{ display:none; }
-    
-    .hint{ position:fixed; bottom:92px; z-index:2147483646; right: 22px; background:#0f172a; color:#fff; font-size:14px; padding:10px 30px 10px 12px; border-radius:12px; box-shadow:var(--shadow); display:none; max-width:calc(100vw - 120px); white-space:nowrap; }
-    .hint.show{ display:block; animation:fadein .22s ease-out; }
-    .hint::after{ content:""; position:absolute; right: 20px; bottom:-8px; border-left:8px solid transparent; border-right:8px solid transparent; border-top:8px solid #0f172a; }
-    .hint button{ position:absolute; right:6px; top:4px; width:20px; height:20px; border-radius:50%; background:#111827; color:#fff; border:1px solid #374151; font-size:14px; line-height:18px; cursor:pointer; }
-    @keyframes fadein{ from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
+    * { box-sizing: border-box; }
 
-    .chat-panel{ position:fixed; right:22px; bottom:92px; width:var(--w); max-width:var(--w); background:var(--panel); border-radius:var(--radius); box-shadow:var(--shadow); overflow:hidden; display:none; flex-direction:column; contain:content; z-index:2147483646; border:1px solid #f1f5f9; }
-    .chat-panel.open{ display:flex; }
-    @media (max-width:520px){ .chat-panel{ width:var(--w-m); max-width:var(--w-m); right:16px; left:16px; } }
+    /* Launcher */
+    .chat-launcher {
+      position: absolute; bottom: 0; right: 0;
+      width: 60px; height: 60px; border-radius: 50%;
+      background: var(--brand); box-shadow: var(--shadow);
+      display: grid; place-items: center; cursor: pointer;
+      color: #fff; border: none; z-index: 1000; padding: 0;
+      transition: transform 0.2s;
+    }
+    .chat-launcher:hover { transform: scale(1.05); }
+    .chat-launcher svg { width: 28px; height: 28px; display: block; }
+    .icon-open { display: block; }
+    .icon-close { display: none; }
+    .chat-launcher.open .icon-open { display: none; }
+    .chat-launcher.open .icon-close { display: block; }
 
-    .chat-header{ background:var(--brand); color:#fff; height:72px; padding:8px 16px; display:flex; align-items:center; flex-shrink: 0; }
-    .chat-header img{ height:38px; object-fit:contain; }
-    .spacer{ flex:1; }
-    .kebab{ width:34px; height:34px; border-radius:8px; border:none; color:#fff; background:rgba(255,255,255,.16); cursor:pointer; display:grid; place-items:center; }
-    .kebab svg{ width:18px; height:18px; }
-    
-    /* MENU ADJUSTMENTS */
-    .menu{ position:absolute; right:16px; top:72px; background:#1f2937; color:#e5e7eb; border-radius:12px; padding:6px; box-shadow:var(--shadow); display:none; z-index:2147483648; width:260px; }
-    .menu.open{ display:block; }
-    
-    /* UPDATED: Increased font-size to 16px and added font-weight */
-    .menu-item{ display:flex; gap:12px; align-items:center; padding:12px; border-radius:8px; cursor:pointer; font-size: 16px; font-weight: 500; }
-    .menu-item:hover{ background:#374151; }
-    .menu-hr{ height:1px; background:#374151; margin:4px 6px; }
+    /* Hint */
+    .hint {
+      position: absolute; bottom: 74px; right: 0;
+      background: #0f172a; color: #fff; font-family: var(--font); font-size: 14px;
+      padding: 10px 30px 10px 12px; border-radius: 12px;
+      box-shadow: var(--shadow); display: none; white-space: nowrap;
+    }
+    .hint.show { display: block; animation: fadein .22s ease-out; }
+    .hint::after {
+      content: ""; position: absolute; right: 20px; bottom: -8px;
+      border-left: 8px solid transparent; border-right: 8px solid transparent;
+      border-top: 8px solid #0f172a;
+    }
+    .hint-close {
+      position: absolute; right: 6px; top: 4px; width: 20px; height: 20px;
+      border-radius: 50%; background: #111827; color: #fff;
+      border: 1px solid #374151; font-size: 14px; line-height: 18px;
+      cursor: pointer; display: flex; align-items: center; justify-content: center;
+    }
+    @keyframes fadein { from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
 
-    .chat-body{ height:var(--h); max-height:var(--h); overflow:auto; padding:16px; background:var(--bg); color:#fff; }
-    .row{ display:flex; gap:10px; margin:12px 0; }
-    .row.bot{ justify-content:flex-start; }
-    .row.user{ justify-content:flex-end; }
-    .avatar{ width:30px;height:30px; border-radius:50%; overflow:hidden; flex:0 0 auto; display:none; background:#fff; border:1px solid #e5e7eb; }
-    .row.bot .avatar{ display:block; }
-    .avatar img{ width:100%; height:100%; object-fit:contain; padding:2px; }
-    .content{ max-width:var(--bubblew); }
-    .name{ font-size:12px; font-weight:700; color:#9ca3af; margin:0 0 4px 6px; }
-    .bubble{ padding:12px 14px; border-radius:14px; line-height:1.45; font-size:14px; box-shadow:0 1px 0 rgba(0,0,0,.25); word-wrap:break-word; white-space:pre-wrap; }
-    .bot .bubble{ background:#111f2c; color:#dbeafe; border-top-left-radius:8px; }
-    .user .bubble{ background:var(--brand); color:#fff; border-top-right-radius:8px; }
+    /* Panel */
+    .chat-panel {
+      position: absolute; bottom: 74px; right: 0;
+      width: var(--w); height: var(--h);
+      background: var(--panel); border-radius: var(--radius);
+      box-shadow: var(--shadow); overflow: hidden;
+      display: none; flex-direction: column;
+      border: 1px solid #f1f5f9; font-family: var(--font);
+    }
+    .chat-panel.open { display: flex; }
     
-    .typing{ display:inline-flex; gap:4px; align-items:center; }
-    .dot{ width:6px; height:6px; border-radius:50%; background:#9ca3af; opacity:.4; animation:blink 1s infinite; }
-    .dot:nth-child(2){ animation-delay:.15s; } .dot:nth-child(3){ animation-delay:.3s; }
-    @keyframes blink{ 0%,100%{opacity:.2} 50%{opacity:1} }
-    
-    .chat-input{ display:flex; gap:8px; padding:12px; border-top:1px solid #111827; background:#0b0f14; }
-    .chat-input input{ flex:1; padding:12px 14px; border:2px solid var(--brand); border-radius:12px; font-size:14px; font-family:var(--font); background:#0f172a; color:#fff; }
-    .chat-input input::placeholder{ color:#cbd5e1; }
-    .chat-input input:disabled{ opacity:.6; cursor:not-allowed; }
-    .chat-input button{ background:var(--brand); color:#fff; border:none; padding:0 16px; border-radius:12px; cursor:pointer; font-weight:700; display:grid; place-items:center; }
-    .chat-input button[disabled]{ opacity:.6; cursor:not-allowed; }
-    .chat-input button svg{ width:18px; height:18px; display:block; }
-    .spinner{ width:18px; height:18px; border:2px solid rgba(255,255,255,.5); border-top-color:#fff; border-radius:50%; animation:spin 0.8s linear infinite; }
-    @keyframes spin{ to{ transform:rotate(360deg);} }
+    @media (max-width: 520px) {
+      .chat-panel { width: var(--w-m); right: -6px; bottom: 80px; height: 70vh; }
+    }
 
-    .modal{ position:fixed; inset:0; background:rgba(0,0,0,.5); display:none; align-items:center; justify-content:center; z-index:2147483649; }
-    .modal.open{ display:flex; }
-    .modal-card{ width:min(520px, 92vw); background:#111827; color:#e5e7eb; border-radius:14px; box-shadow:var(--shadow); padding:14px; }
-    .modal-h{ font-weight:800; margin:4px 0 10px 2px; }
-    .list{ max-height:50vh; overflow:auto; margin-top:8px; }
-    .conv{ display:flex; justify-content:space-between; align-items:center; padding:10px; border-radius:10px; }
-    .conv:nth-child(odd){ background:#1f2937; }
-    .conv .left{ display:flex; flex-direction:column; gap:6px; }
-    .conv .title{ font-weight:700; }
-    .conv .meta{ font-size:12px; color:#9ca3af; }
-    .conv .actions{ display:flex; gap:8px; }
-    .btn{ background:#374151; color:#e5e7eb; border:none; padding:6px 10px; border-radius:8px; cursor:pointer; }
-    .btn:hover{ background:#4b5563; }
+    /* Header */
+    .chat-header {
+      background: var(--brand); color: #fff; height: 56px;
+      padding: 0 16px; display: flex; align-items: center; flex-shrink: 0;
+    }
+    .spacer { flex: 1; }
+    .kebab {
+      width: 34px; height: 34px; border-radius: 8px; border: none;
+      color: #fff; background: rgba(255,255,255,.16); cursor: pointer;
+      display: grid; place-items: center; margin-left: 10px;
+    }
+    .kebab svg { width: 20px; height: 20px; }
+
+    /* Menu */
+    .menu {
+      position: absolute; top: 60px; right: 16px; width: 220px;
+      background: #1f2937; color: #e5e7eb; border-radius: 12px;
+      padding: 6px; box-shadow: var(--shadow); display: none; z-index: 100;
+    }
+    .menu.open { display: block; }
+    .menu-item { display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; }
+    .menu-item:hover { background: #374151; }
+    .menu-hr { height: 1px; background: #374151; margin: 4px 6px; }
+
+    /* Body */
+    .chat-body { flex: 1; overflow-y: auto; padding: 16px; background: var(--bg); color: #fff; }
+    .row { display: flex; gap: 10px; margin: 12px 0; }
+    .row.bot { justify-content: flex-start; }
+    .row.user { justify-content: flex-end; }
+
+    /* Avatar (Tiny 28px) */
+    .avatar { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex: 0 0 auto; background: #fff; }
+    .avatar img { width: 100%; height: 100%; object-fit: cover; }
+
+    .content { max-width: var(--bubblew); }
+    /* Name (Baloo Thambi 2) */
+    .name { font-family: var(--font-tamil); font-size: 13px; font-weight: 600; color: #9ca3af; margin: 0 0 2px 6px; }
     
-    .poll{ background:#0b1220; border:1px solid #1f2a44; border-radius:14px; padding:14px; margin-top:6px; }
-    .poll-title{ font-weight:700; margin:4px 6px 10px; color:#cfe3ff; }
-    .poll-btn{ width:100%; text-align:left; background:#122034; color:#e5edff; border:1px solid #20324f; border-radius:12px; padding:12px 14px; margin:10px 0; cursor:pointer; font:inherit; }
-    .poll-btn:hover{ background:#162742; }
+    .bubble { padding: 12px 14px; border-radius: 14px; line-height: 1.45; font-size: 14px; word-wrap: break-word; white-space: pre-wrap; }
+    .bot .bubble { background: #111f2c; color: #dbeafe; border-top-left-radius: 8px; }
+    .user .bubble { background: var(--brand); color: #fff; border-top-right-radius: 8px; }
+
+    /* Typing */
+    .typing { display: inline-flex; gap: 4px; align-items: center; }
+    .dot { width: 6px; height: 6px; border-radius: 50%; background: #9ca3af; opacity: .4; animation: blink 1s infinite; }
+    .dot:nth-child(2) { animation-delay: .15s; } .dot:nth-child(3) { animation-delay: .3s; }
+    @keyframes blink { 0%,100%{opacity:.2} 50%{opacity:1} }
+
+    /* Input */
+    .chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #111827; background: #0b0f14; }
+    .chat-input input { flex: 1; padding: 12px 14px; border: 2px solid var(--brand); border-radius: 12px; font-size: 14px; background: #0f172a; color: #fff; outline: none; font-family: var(--font); }
+    .chat-input button { background: var(--brand); color: #fff; border: none; padding: 0 16px; border-radius: 12px; cursor: pointer; display: grid; place-items: center; }
+    .chat-input button svg { width: 18px; height: 18px; }
+    .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.5); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
+    @keyframes spin { to{ transform: rotate(360deg); } }
+
+    /* Modal */
+    .modal { position: absolute; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 200; height: 100%; width: 100%; border-radius: var(--radius); }
+    .modal.open { display: flex; }
+    .modal-card { width: 90%; background: #111827; color: #e5e7eb; border-radius: 14px; padding: 14px; max-height: 80%; display:flex; flex-direction:column; }
+    .modal-h { font-weight: 800; margin-bottom: 10px; }
+    .list { overflow-y: auto; margin-top: 8px; flex:1; }
+    .conv { display: flex; justify-content: space-between; align-items: center; padding: 10px; border-radius: 10px; background: #1f2937; margin-bottom: 6px; }
+    .conv .title { font-weight: 700; font-size: 13px; }
+    .conv .meta { font-size: 11px; color: #9ca3af; }
+    .btn { background: #374151; color: #e5e7eb; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; font-size: 12px; margin-left: 4px; }
+
+    /* Polls */
+    .poll { background: #0b1220; border: 1px solid #1f2a44; border-radius: 14px; padding: 14px; margin-top: 6px; }
+    .poll-title { font-weight: 700; margin-bottom: 10px; color: #cfe3ff; }
+    .poll-btn { width: 100%; text-align: left; background: #122034; color: #e5edff; border: 1px solid #20324f; border-radius: 12px; padding: 12px 14px; margin: 6px 0; cursor: pointer; font-family: inherit; }
+    .poll-btn:hover { background: #162742; }
   `;
-  document.head.appendChild(style);
+  shadow.appendChild(style);
 
-  // 2. CREATE HTML STRUCTURE
+  // Define HTML
   const container = document.createElement('div');
-  container.id = 'maiyyam-widget-container';
   container.innerHTML = `
-    <button class="chat-launcher" id="launcher" aria-label="Open chat" aria-expanded="false">
-      <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8z"/></svg>
-      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M6 6l12 12M18 6l-12 12"/></svg>
+    <button class="chat-launcher" id="launcher">
+      <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8z"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6l-12 12"/></svg>
     </button>
-    <div class="hint" id="hint">Hi there! Need clarity? <button id="hintClose" aria-label="Hide">×</button></div>
-    <div class="chat-panel" id="panel" aria-live="polite">
+
+    <div class="hint" id="hint">Hi there! Need clarity? <div class="hint-close" id="hintClose">×</div></div>
+
+    <div class="chat-panel" id="panel">
       <div class="chat-header">
-        <img src="https://dme2wmiz2suov.cloudfront.net/Institution(3815)/Logo/2642439-Group_21.png" alt="Maiyyam logo" />
         <div class="spacer"></div>
-        <button class="kebab" id="kebab" aria-label="Menu"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
+        <button class="kebab" id="kebab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
         <div class="menu" id="menu">
           <div class="menu-item" id="newConv">➕ New Conversation</div>
           <div class="menu-hr"></div>
@@ -108,50 +193,53 @@
       <div class="chat-body" id="body"></div>
       <form class="chat-input" id="form">
         <input id="input" placeholder="Type your message..." autocomplete="off" />
-        <button type="submit" id="sendBtn" aria-label="Send message">
-          <svg id="sendIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M22 2L11 13" /><path stroke-width="2" d="M22 2l-7 20-4-9-9-4 20-7z" /></svg>
-        </button>
+        <button type="submit" id="sendBtn"><svg id="sendIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg></button>
       </form>
-    </div>
-    <div class="modal" id="prevModal" role="dialog" aria-modal="true">
-      <div class="modal-card">
-        <div class="modal-h">Previous Conversations</div>
-        <div class="list" id="convList"></div>
-        <div style="display:flex; justify-content:flex-end; gap:8px; margin-top:10px;">
-          <button class="btn" id="clearAll">Clear All</button>
-          <button class="btn" id="closeModal">Close</button>
+      
+      <div class="modal" id="prevModal">
+        <div class="modal-card">
+          <div class="modal-h">Previous Conversations</div>
+          <div class="list" id="convList"></div>
+          <div style="display:flex; justify-content:flex-end; margin-top:10px;">
+            <button class="btn" id="clearAll">Clear All</button>
+            <button class="btn" id="closeModal">Close</button>
+          </div>
         </div>
       </div>
     </div>
   `;
-  document.body.appendChild(container);
+  shadow.appendChild(container);
 
-  // 3. LOGIC
+  // --- LOGIC ---
   const WEBHOOK_URL = 'https://aiagent61999.app.n8n.cloud/webhook/de779a9c-9554-41ca-b95b-446b396b8846';
-  const LOGO = 'https://dme2wmiz2suov.cloudfront.net/Institution(3815)/Logo/2642439-Group_21.png';
-  const PERSIST_ACROSS_RELOADS = true;
+  // IMPORTANT: Since this script runs on the client site, "avatar.jpeg" must be a full URL.
+  // For now, I'm using a placeholder. You MUST replace this with the public URL of your 'avatar.jpeg'
+  // Example: 'https://your-website.com/images/avatar.jpeg' or the Cloudfront link if you have one.
+  // Since we are fixing the GitHub file, I will leave it generic for you to paste the URL.
+  const LOGO = 'https://dme2wmiz2suov.cloudfront.net/Institution(3815)/Logo/2642439-Group_21.png'; // Fallback to Maiyyam logo if you don't have a URL for the new avatar yet.
+  
   const STORE_KEY = 'maiyyam_conversations_v1';
   const CONFIRM_RE = /(your counselling appointment is confirmed|your appointment has been rescheduled|we look forward to seeing you at maiyyam edtech|appointment (?:has been )?(?:confirmed|booked|scheduled))/i;
   const HANDOFF_DELAY_MS = 1500;
 
-  // Select elements from the CONTAINER
-  const panel = container.querySelector('#panel');
-  const launcher = container.querySelector('#launcher');
-  const hint = container.querySelector('#hint');
-  const hintClose = container.querySelector('#hintClose');
-  const body = container.querySelector('#body');
-  const form = container.querySelector('#form');
-  const input = container.querySelector('#input');
-  const sendBtn = container.querySelector('#sendBtn');
-  const sendIcon = container.querySelector('#sendIcon');
-  const kebab = container.querySelector('#kebab');
-  const menu = container.querySelector('#menu');
-  const newConvBtn = container.querySelector('#newConv');
-  const openPrevBtn = container.querySelector('#openPrev');
-  const prevModal = container.querySelector('#prevModal');
-  const convList = container.querySelector('#convList');
-  const clearAllBtn = container.querySelector('#clearAll');
-  const closeModalBtn = container.querySelector('#closeModal');
+  const get = (id) => shadow.getElementById(id);
+  const panel = get('panel');
+  const launcher = get('launcher');
+  const hint = get('hint');
+  const hintClose = get('hintClose');
+  const body = get('body');
+  const form = get('form');
+  const input = get('input');
+  const sendBtn = get('sendBtn');
+  const sendIcon = get('sendIcon');
+  const kebab = get('kebab');
+  const menu = get('menu');
+  const newConvBtn = get('newConv');
+  const openPrevBtn = get('openPrev');
+  const prevModal = get('prevModal');
+  const convList = get('convList');
+  const clearAllBtn = get('clearAll');
+  const closeModalBtn = get('closeModal');
 
   let conversations = loadConversations();
   let currentId = startOrResumeConversation();
@@ -165,7 +253,7 @@
   let handoffScheduled = false;
 
   function makeSessionId(){ return (globalThis.crypto?.randomUUID?.() ?? String(Date.now())) + '-' + Math.random().toString(36).slice(2,7); }
-
+  
   function rewriteNumericDateTimeToSlotPick(input) {
     const s = String(input || "");
     const re = /\b(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?\b(?:.*?\b(?:at|by|around)\b)?\s*([0-2]?\d)(?:[.:](\d{2}))?\s*(a\.?m?\.?|p\.?m?\.?|am|pm)?\b/i;
@@ -186,21 +274,21 @@
     hintTimer = setTimeout(()=>{ hint.classList.add('show'); }, 2000);
   }
   function hideHint(){ hint.classList.remove('show'); clearTimeout(hintTimer); }
-  hintClose.addEventListener('click', ()=>{ suppressedUntilReopen = true; hideHint(); });
+  hintClose.addEventListener('click', (e)=>{ e.stopPropagation(); suppressedUntilReopen = true; hideHint(); });
   showHintDelayed();
 
-  function loadConversations(){ if (!PERSIST_ACROSS_RELOADS) return {}; try{ return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch{ return {}; } }
-  function saveConversations(){ if (!PERSIST_ACROSS_RELOADS) return; localStorage.setItem(STORE_KEY, JSON.stringify(conversations)); }
+  function loadConversations(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch{ return {}; } }
+  function saveConversations(){ localStorage.setItem(STORE_KEY, JSON.stringify(conversations)); }
   function startOrResumeConversation(){
     const ids = Object.keys(conversations);
     if (ids.length) return ids[ids.length-1];
     const id = String(Date.now());
-    conversations[id] = { id, title:'Conversation', createdAt:Date.now(), messages:[{role:'bot',text:'Welcome to Maiyyam. How can we help you?',t:Date.now()}] };
+    conversations[id] = { id, title:'Conversation', createdAt:Date.now(), messages:[{role:'bot',text:'Welcome to Kural. How can we help you?',t:Date.now()}] };
     saveConversations(); return id;
   }
   function startNewConversation(){
     const id = String(Date.now());
-    conversations[id] = { id, title:'Conversation', createdAt:Date.now(), messages:[{role:'bot',text:'Welcome to Maiyyam. How can we help you?',t:Date.now()}] };
+    conversations[id] = { id, title:'Conversation', createdAt:Date.now(), messages:[{role:'bot',text:'Welcome to Kural. How can we help you?',t:Date.now()}] };
     saveConversations();
     currentId = id; sessionId = makeSessionId();
     awaitingProceed = false; followupUsed = false; handoffScheduled = false;
@@ -211,12 +299,13 @@
     body.innerHTML = '';
     const msgs = conversations[currentId]?.messages || [];
     for (const m of msgs){ (m.role==='user') ? addUser(m.text,false) : addBot(m.text,false); }
-    if (!msgs.length && isFresh === false) addBot("Welcome to Maiyyam. How can we help you?", true, false);
+    if (!msgs.length && isFresh === false) addBot("Welcome to Kural. How can we help you?", true, false);
     body.scrollTop = body.scrollHeight;
   }
+
   function addBot(text, store=true, scroll=true){
     const row = document.createElement('div'); row.className = 'row bot';
-    row.innerHTML = `<div class="avatar"><img src="${LOGO}" alt="Maiyyam Assistant" /></div><div class="content"><div class="name">Maiyyam Assistant</div><div class="bubble">${text}</div></div>`;
+    row.innerHTML = `<div class="avatar"><img src="${LOGO}" alt="Bot" /></div><div class="content"><div class="name">குறள்</div><div class="bubble">${text}</div></div>`;
     body.appendChild(row);
     if (scroll) body.scrollTop = body.scrollHeight;
     if (store) pushMessage('bot', text);
@@ -255,26 +344,29 @@
       const label = decodeURIComponent(btn.dataset.slot || ''); sendDirect(label); row.querySelectorAll('button').forEach(b=>b.disabled=true);
     });
   }
+
   function setWaiting(state){
     waiting = state; input.disabled = state; sendBtn.disabled = state;
     if (state){ sendIcon.style.display = 'none'; const sp = document.createElement('div'); sp.className='spinner'; sp.id='spinner'; sendBtn.appendChild(sp); }
-    else { container.querySelector('#spinner')?.remove(); sendIcon.style.display = ''; input.focus(); }
+    else { shadow.getElementById('spinner')?.remove(); sendIcon.style.display = ''; input.focus(); }
   }
-  function togglePanel(open){
-    const isOpen = (open !== undefined) ? open : !panel.classList.contains('open');
+
+  function togglePanel(){
+    const isOpen = !panel.classList.contains('open');
     panel.classList.toggle('open', isOpen);
+    launcher.classList.toggle('open', isOpen);
     launcher.setAttribute('aria-expanded', String(isOpen));
     menu.classList.remove('open');
     if (isOpen){ hideHint(); suppressedUntilReopen = true; renderMessages(true); input.focus(); }
     else { suppressedUntilReopen = false; showHintDelayed(); }
   }
-  launcher.addEventListener('click', ()=> togglePanel());
-  document.addEventListener('keydown', (e)=>{ if (e.key === 'Escape' && panel.classList.contains('open')) togglePanel(false); });
+  launcher.addEventListener('click', togglePanel);
   kebab.addEventListener('click', (e)=>{ e.stopPropagation(); menu.classList.toggle('open'); });
-  document.addEventListener('click', ()=> menu.classList.remove('open'));
+  shadow.addEventListener('click', ()=> menu.classList.remove('open'));
+  
   newConvBtn.addEventListener('click', ()=>{ startNewConversation(); menu.classList.remove('open'); input.focus(); });
   openPrevBtn.addEventListener('click', ()=>{ menu.classList.remove('open'); openPrevModal(); });
-  input.addEventListener('keydown', (e)=>{ if (waiting && (e.key === 'Enter' || e.key.length === 1)) e.preventDefault(); });
+  
   function openPrevModal(){
     convList.innerHTML = '';
     const ids = Object.keys(conversations);
@@ -294,11 +386,12 @@
   convList.addEventListener('click', (e)=>{
     const btn = e.target.closest('button'); if(!btn) return;
     const id = btn.dataset.id, act = btn.dataset.act;
-    if (act === 'load'){ currentId = id; renderMessages(true); prevModal.classList.remove('open'); togglePanel(true); }
-    else if (act === 'del'){ delete conversations[id]; saveConversations(); openPrevModal(); if (id === currentId){ const ids = Object.keys(conversations); currentId = ids[ids.length-1] || startOrResumeConversation(); renderMessages(true); } }
+    if (act === 'load'){ currentId = id; renderMessages(true); prevModal.classList.remove('open'); if(!panel.classList.contains('open')) togglePanel(); }
+    else if (act === 'del'){ delete conversations[id]; saveConversations(); openPrevModal(); if (id === currentId){ startOrResumeConversation(); renderMessages(true); } }
   });
   clearAllBtn.addEventListener('click', ()=>{ conversations = {}; saveConversations(); currentId = startOrResumeConversation(); renderMessages(true); openPrevModal(); });
   closeModalBtn.addEventListener('click', ()=> prevModal.classList.remove('open'));
+
   function extractSlots(data){
     let slots = data?.suggested_slots ?? data?.slots ?? data?.meta?.suggested_slots;
     if (typeof slots === 'string'){ try { slots = JSON.parse(slots); } catch {} }
