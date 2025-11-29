@@ -33,7 +33,6 @@
       --shadow: 0 18px 50px rgba(0,0,0,.18);
       --w: 400px;
       --w-m: calc(100vw - 32px);
-      /* REDUCED HEIGHT to 540px so it doesn't hit top */
       --h: 540px; 
       --bubblew: 82%;
       --font: "Inter", "Poppins", sans-serif;
@@ -215,6 +214,7 @@
     <div class="chat-panel" id="panel">
       <div class="chat-header">
         <img src="https://dme2wmiz2suov.cloudfront.net/Institution(3815)/Logo/2642439-Group_21.png" alt="Maiyyam" />
+        
         <button class="kebab" id="kebab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
         <div class="menu" id="menu">
           <div class="menu-item" id="newConv">➕ New Conversation</div>
