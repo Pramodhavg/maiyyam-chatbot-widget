@@ -33,13 +33,11 @@
       --shadow: 0 18px 50px rgba(0,0,0,.18);
       --w: 400px;
       --w-m: calc(100vw - 32px);
-      --h: 600px; /* TALL WINDOW */
+      /* REDUCED HEIGHT: From 600px to 520px */
+      --h: 520px; 
       --bubblew: 82%;
       --font: "Inter", "Poppins", sans-serif;
       --font-tamil: 'Baloo Thambi 2', cursive, sans-serif;
-      
-      /* FORCE RESET ALIGNMENT */
-      text-align: left;
     }
     
     * { box-sizing: border-box; }
@@ -67,7 +65,7 @@
       background: #0f172a; color: #fff; font-family: var(--font); font-size: 14px;
       padding: 10px 30px 10px 12px; border-radius: 12px;
       box-shadow: var(--shadow); display: none; white-space: nowrap;
-      z-index: 1200; text-align: left;
+      z-index: 1200;
     }
     .hint.show { display: block; animation: fadein .22s ease-out; }
     .hint::after {
@@ -86,12 +84,12 @@
     /* Panel */
     .chat-panel {
       position: fixed; right: 22px; bottom: 96px;
-      width: var(--w); max-width: var(--w); height: var(--h);
+      width: var(--w); height: var(--h);
+      max-height: 80vh; 
       background: var(--panel); border-radius: var(--radius);
       box-shadow: var(--shadow); overflow: hidden;
       display: none; flex-direction: column;
       border: 1px solid #f1f5f9; font-family: var(--font); z-index: 1100;
-      text-align: left; /* Force Left Alignment */
     }
     .chat-panel.open { display: flex; }
     
@@ -102,13 +100,8 @@
     /* Header */
     .chat-header {
       background: var(--brand); color: #fff; height: 56px;
-      padding: 0 16px; 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; /* Force items to edges */
-      flex-shrink: 0; position: relative;
+      padding: 0 16px; display: flex; align-items: center; flex-shrink: 0; position: relative;
     }
-    
     .chat-header img { 
       height: 30px; 
       width: auto; 
@@ -116,12 +109,11 @@
       display: block; 
     }
     
-    /* Removed spacer, using justify-content: space-between instead */
-    
+    .spacer { flex: 1; }
     .kebab {
       width: 34px; height: 34px; border-radius: 8px; border: none;
       color: #fff; background: rgba(255,255,255,.16); cursor: pointer;
-      display: grid; place-items: center; margin-left: auto; /* Push to right */
+      display: grid; place-items: center; margin-left: 10px;
     }
     .kebab svg { width: 20px; height: 20px; }
 
@@ -130,7 +122,6 @@
       position: absolute; top: 60px; right: 16px; width: 220px;
       background: #1f2937; color: #e5e7eb; border-radius: 12px;
       padding: 6px; box-shadow: var(--shadow); display: none; z-index: 1300;
-      text-align: left;
     }
     .menu.open { display: block; }
     .menu-item { display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; }
@@ -138,8 +129,8 @@
     .menu-hr { height: 1px; background: #374151; margin: 4px 6px; }
 
     /* Body */
-    .chat-body { flex: 1; overflow-y: auto; padding: 16px; background: var(--bg); color: #fff; text-align: left; }
-    .row { display: flex; gap: 10px; margin: 12px 0; width: 100%; }
+    .chat-body { flex: 1; overflow-y: auto; padding: 16px; background: var(--bg); color: #fff; }
+    .row { display: flex; gap: 10px; margin: 12px 0; }
     .row.bot { justify-content: flex-start; }
     .row.user { justify-content: flex-end; }
 
@@ -148,9 +139,9 @@
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .content { max-width: var(--bubblew); }
-    .name { font-family: var(--font-tamil); font-size: 13px; font-weight: 600; color: #9ca3af; margin: 0 0 2px 6px; text-align: left; }
+    .name { font-family: var(--font-tamil); font-size: 13px; font-weight: 600; color: #9ca3af; margin: 0 0 2px 6px; }
     
-    .bubble { padding: 12px 14px; border-radius: 14px; line-height: 1.45; font-size: 14px; word-wrap: break-word; white-space: pre-wrap; box-shadow: 0 1px 0 rgba(0,0,0,.25); text-align: left; }
+    .bubble { padding: 12px 14px; border-radius: 14px; line-height: 1.45; font-size: 14px; word-wrap: break-word; white-space: pre-wrap; box-shadow: 0 1px 0 rgba(0,0,0,.25); }
     .bot .bubble { background: #111f2c; color: #dbeafe; border-top-left-radius: 8px; }
     .user .bubble { background: var(--brand); color: #fff; border-top-right-radius: 8px; }
 
@@ -161,16 +152,30 @@
     @keyframes blink { 0%,100%{opacity:.2} 50%{opacity:1} }
 
     /* Input */
-    .chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #111827; background: #0b0f14; text-align: left; }
+    .chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #111827; background: #0b0f14; }
     .chat-input input { flex: 1; padding: 12px 14px; border: 2px solid var(--brand); border-radius: 12px; font-size: 14px; background: #0f172a; color: #fff; outline: none; font-family: var(--font); }
+    
+    /* DISABLED STATE - STOP SIGN CURSOR */
+    .chat-input input:disabled { 
+        opacity: 0.5; 
+        cursor: not-allowed; 
+        background: #1a2332; 
+        border-color: #374151;
+    }
+    
     .chat-input button { background: var(--brand); color: #fff; border: none; padding: 0 16px; border-radius: 12px; cursor: pointer; display: grid; place-items: center; font-weight: 700; }
-    .chat-input button[disabled] { opacity: .6; cursor: not-allowed; }
+    
+    .chat-input button[disabled] { 
+        opacity: .6; 
+        cursor: not-allowed; 
+    }
+    
     .chat-input button svg { width: 18px; height: 18px; display: block; }
     .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.5); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to{ transform: rotate(360deg); } }
 
     /* Modal */
-    .modal { position: absolute; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 2000; height: 100%; width: 100%; text-align: left; }
+    .modal { position: absolute; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 2000; height: 100%; width: 100%; }
     .modal.open { display: flex; }
     .modal-card { width: min(520px, 92vw); background: #111827; color: #e5e7eb; border-radius: 14px; padding: 14px; box-shadow: var(--shadow); }
     .modal-h { font-weight: 800; margin: 4px 0 10px 2px; }
@@ -184,7 +189,7 @@
     .btn:hover { background: #4b5563; }
 
     /* Polls */
-    .poll { background: #0b1220; border: 1px solid #1f2a44; border-radius: 14px; padding: 14px; margin-top: 6px; text-align: left; }
+    .poll { background: #0b1220; border: 1px solid #1f2a44; border-radius: 14px; padding: 14px; margin-top: 6px; }
     .poll-title { font-weight: 700; margin: 4px 6px 10px; color: #cfe3ff; }
     .poll-btn { width: 100%; text-align: left; background: #122034; color: #e5edff; border: 1px solid #20324f; border-radius: 12px; padding: 12px 14px; margin: 10px 0; cursor: pointer; font-family: inherit; }
     .poll-btn:hover { background: #162742; }
@@ -204,7 +209,7 @@
     <div class="chat-panel" id="panel">
       <div class="chat-header">
         <img src="https://dme2wmiz2suov.cloudfront.net/Institution(3815)/Logo/2642439-Group_21.png" alt="Maiyyam" />
-        
+        <div class="spacer"></div>
         <button class="kebab" id="kebab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
         <div class="menu" id="menu">
           <div class="menu-item" id="newConv">➕ New Conversation</div>
@@ -235,8 +240,7 @@
   // 6. Logic
   const WEBHOOK_URL = 'https://aiagent61999.app.n8n.cloud/webhook/de779a9c-9554-41ca-b95b-446b396b8846';
   
-  // !!! GITHUB AVATAR IMAGE !!!
-  // Replace this with your actual avatar URL
+  // !!! Ensure this link is correct in your code !!!
   const LOGO = 'https://cdn.jsdelivr.net/gh/Pramodhavg/maiyyam-chatbot-widget@main/avatar.jpeg'; 
   
   const STORE_KEY = 'maiyyam_conversations_v1';
@@ -367,9 +371,26 @@
   }
 
   function setWaiting(state){
-    waiting = state; input.disabled = state; sendBtn.disabled = state;
-    if (state){ sendIcon.style.display = 'none'; const sp = document.createElement('div'); sp.className='spinner'; sp.id='spinner'; sendBtn.appendChild(sp); }
-    else { shadow.getElementById('spinner')?.remove(); sendIcon.style.display = ''; input.focus(); }
+    waiting = state; 
+    input.disabled = state; 
+    sendBtn.disabled = state;
+    
+    // Explicitly update style for user feedback
+    if (state) {
+      input.style.cursor = 'not-allowed';
+      input.style.opacity = '0.5';
+      sendIcon.style.display = 'none'; 
+      const sp = document.createElement('div'); 
+      sp.className='spinner'; 
+      sp.id='spinner'; 
+      sendBtn.appendChild(sp); 
+    } else {
+      input.style.cursor = 'auto';
+      input.style.opacity = '1';
+      shadow.getElementById('spinner')?.remove(); 
+      sendIcon.style.display = ''; 
+      input.focus(); 
+    }
   }
 
   function togglePanel(){
@@ -440,7 +461,10 @@
     if (!userText) return;
     addUser(userText);
     lastUserAffirmedProceed = awaitingProceed && /^\s*(yes|yeah|yep|ya|ok|okay|confirm|confirmed|proceed|go ahead)\b/i.test(userText);
+    
+    // BLOCK INPUT
     setWaiting(true);
+    
     const stopTyping = addTyping();
     const outgoing1 = rewriteNumericDateTimeToSlotPick(userText);
     const payload = { sessionId, key: `web:${sessionId}`, message: outgoing1 };
@@ -470,6 +494,8 @@
       }catch{ stop2(); }
     }
     if (!/shall\s+i\s+proceed\??/i.test(replyText)) { awaitingProceed = false; }
+    
+    // UNBLOCK INPUT
     setWaiting(false);
   }
   form.addEventListener('submit', async (e)=>{ e.preventDefault(); if (waiting) return; const text = input.value.trim(); if(!text) return; input.value = ''; await sendDirect(text); });
