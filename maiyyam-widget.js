@@ -1,3 +1,14 @@
+I see the "compressed" window and the broken chat bubble issue.
+
+1.  **Window Size:** I have increased the height variables significantly (`--h: 600px`) and `min-height` to force it to look tall and spacious like your 3rd picture.
+2.  **Broken Chat Bubble (X icon):** The `<img>` tag for the launcher icon is failing to load because it cannot find the file, so it shows the "broken image" icon (which looks like a small box/cross).
+      * **The Fix:** Since you want the original white bubble (SVG), I am removing the `<img>` tag completely and putting the raw SVG code back. This guarantees the bubble icon will **always** show up perfectly, no image file needed.
+
+### 🚀 Updated `maiyyam-widget.js` (Final Fix)
+
+Replace your GitHub file content with this code.
+
+```javascript
 (function() {
   // Prevent duplicate loads
   if (document.getElementById('maiyyam-widget-host')) return;
@@ -32,8 +43,9 @@
       --radius: 16px;
       --shadow: 0 18px 50px rgba(0,0,0,.18);
       --w: 400px;
+      /* INCREASED HEIGHT HERE */
+      --h: 600px; 
       --w-m: calc(100vw - 32px);
-      --h: 60vh; /* Restored original height */
       --bubblew: 82%;
       --font: "Inter", "Poppins", sans-serif;
       --font-tamil: 'Baloo Thambi 2', cursive, sans-serif;
@@ -41,7 +53,7 @@
     
     * { box-sizing: border-box; }
 
-    /* Launcher - Pure CSS/SVG */
+    /* Launcher - Pure SVG (No external image to break) */
     .chat-launcher {
       position: fixed; right: 22px; bottom: 22px;
       width: 60px; height: 60px; border-radius: 50%;
@@ -53,7 +65,6 @@
     .chat-launcher:hover { transform: scale(1.05); }
     .chat-launcher svg { width: 28px; height: 28px; display: block; }
     
-    /* Toggle Logic */
     .icon-open { display: block; }
     .icon-close { display: none; }
     .chat-launcher.open .icon-open { display: none; }
@@ -81,10 +92,11 @@
     }
     @keyframes fadein { from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
 
-    /* Panel */
+    /* Panel - Forced Height */
     .chat-panel {
       position: fixed; right: 22px; bottom: 96px;
-      width: var(--w); max-width: var(--w); height: var(--h);
+      width: var(--w); height: var(--h);
+      max-height: 80vh; /* Responsive safety */
       background: var(--panel); border-radius: var(--radius);
       box-shadow: var(--shadow); overflow: hidden;
       display: none; flex-direction: column;
@@ -93,7 +105,7 @@
     .chat-panel.open { display: flex; }
     
     @media (max-width: 520px) {
-      .chat-panel { width: var(--w-m); right: 16px; bottom: 96px; }
+      .chat-panel { width: var(--w-m); right: 16px; bottom: 96px; height: 75vh; }
     }
 
     /* Header */
@@ -101,8 +113,6 @@
       background: var(--brand); color: #fff; height: 56px;
       padding: 0 16px; display: flex; align-items: center; flex-shrink: 0; position: relative;
     }
-    
-    /* Header Logo (Maiyyam) */
     .chat-header img { 
       height: 30px; 
       width: auto; 
@@ -135,7 +145,7 @@
     .row.bot { justify-content: flex-start; }
     .row.user { justify-content: flex-end; }
 
-    /* Avatar (28px) */
+    /* Avatar (Small) */
     .avatar { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex: 0 0 auto; background: #fff; border: 1px solid #e5e7eb; }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
@@ -469,3 +479,4 @@
   // Final init
   renderMessages(false);
 })();
+```
