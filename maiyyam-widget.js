@@ -1,8 +1,6 @@
 (function() {
-  // Prevent duplicate loads
   if (document.getElementById('maiyyam-widget-host')) return;
 
-  // 1. Create Host Element
   const host = document.createElement('div');
   host.id = 'maiyyam-widget-host';
   host.style.position = 'fixed';
@@ -11,16 +9,13 @@
   host.style.zIndex = '2147483647';
   document.body.appendChild(host);
 
-  // 2. Attach Shadow DOM
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // 3. Inject Fonts
   const fontLink = document.createElement('link');
   fontLink.href = 'https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@600&family=Inter:wght@400;600;700&display=swap';
   fontLink.rel = 'stylesheet';
   document.head.appendChild(fontLink);
 
-  // 4. Styles
   const style = document.createElement('style');
   style.textContent = `
     :host {
@@ -37,14 +32,11 @@
       --bubblew: 82%;
       --font: "Inter", "Poppins", sans-serif;
       --font-tamil: 'Baloo Thambi 2', cursive, sans-serif;
-      
-      /* FORCE RESET ALIGNMENT */
       text-align: left;
     }
-    
     * { box-sizing: border-box; }
 
-    /* Launcher - Pure SVG */
+    /* --- LAUNCHER FIX --- */
     .chat-launcher {
       position: fixed; right: 22px; bottom: 22px;
       width: 60px; height: 60px; border-radius: 50%;
@@ -54,14 +46,16 @@
       transition: transform 0.2s;
     }
     .chat-launcher:hover { transform: scale(1.05); }
-    .chat-launcher svg { width: 28px; height: 28px; display: block; }
-    
-    .icon-open { display: block; }
-    .icon-close { display: none; }
+
+    /* Force specific visibility rules */
+    .chat-launcher .icon-open { display: block; width: 28px; height: 28px; }
+    .chat-launcher .icon-close { display: none; width: 28px; height: 28px; }
+
+    /* When open class is added, flip visibility */
     .chat-launcher.open .icon-open { display: none; }
     .chat-launcher.open .icon-close { display: block; }
 
-    /* Hint */
+    /* --- HINT --- */
     .hint {
       position: fixed; bottom: 92px; right: 22px;
       background: #0f172a; color: #fff; font-family: var(--font); font-size: 14px;
@@ -83,7 +77,7 @@
     }
     @keyframes fadein { from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
 
-    /* Panel */
+    /* --- PANEL --- */
     .chat-panel {
       position: fixed; right: 22px; bottom: 96px;
       width: var(--w); max-width: var(--w); height: var(--h);
@@ -94,28 +88,17 @@
       text-align: left;
     }
     .chat-panel.open { display: flex; }
-    
     @media (max-width: 520px) {
       .chat-panel { width: var(--w-m); right: 16px; bottom: 96px; height: 75vh; }
     }
 
-    /* Header */
+    /* --- HEADER --- */
     .chat-header {
       background: var(--brand); color: #fff; height: 56px;
-      padding: 0 16px; 
-      display: flex; 
-      align-items: center; 
-      justify-content: space-between; 
-      flex-shrink: 0; position: relative;
+      padding: 0 16px; display: flex; align-items: center; 
+      justify-content: space-between; flex-shrink: 0; position: relative;
     }
-    
-    .chat-header img { 
-      height: 30px; 
-      width: auto; 
-      object-fit: contain; 
-      display: block; 
-    }
-    
+    .chat-header img { height: 30px; width: auto; object-fit: contain; display: block; }
     .kebab {
       width: 34px; height: 34px; border-radius: 8px; border: none;
       color: #fff; background: rgba(255,255,255,.16); cursor: pointer;
@@ -123,7 +106,7 @@
     }
     .kebab svg { width: 20px; height: 20px; }
 
-    /* Menu */
+    /* --- MENU --- */
     .menu {
       position: absolute; top: 60px; right: 16px; width: 220px;
       background: #1f2937; color: #e5e7eb; border-radius: 12px;
@@ -135,51 +118,39 @@
     .menu-item:hover { background: #374151; }
     .menu-hr { height: 1px; background: #374151; margin: 4px 6px; }
 
-    /* Body */
+    /* --- BODY --- */
     .chat-body { flex: 1; overflow-y: auto; padding: 16px; background: var(--bg); color: #fff; text-align: left; }
     .row { display: flex; gap: 10px; margin: 12px 0; width: 100%; }
     .row.bot { justify-content: flex-start; }
     .row.user { justify-content: flex-end; }
 
-    /* Avatar */
     .avatar { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex: 0 0 auto; background: #fff; border: 1px solid #e5e7eb; }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .content { max-width: var(--bubblew); }
-    /* Name (Tamil Font) */
     .name { font-family: var(--font-tamil); font-size: 13px; font-weight: 600; color: #9ca3af; margin: 0 0 2px 6px; text-align: left; }
     
     .bubble { padding: 12px 14px; border-radius: 14px; line-height: 1.45; font-size: 14px; word-wrap: break-word; white-space: pre-wrap; box-shadow: 0 1px 0 rgba(0,0,0,.25); text-align: left; }
     .bot .bubble { background: #111f2c; color: #dbeafe; border-top-left-radius: 8px; }
     .user .bubble { background: var(--brand); color: #fff; border-top-right-radius: 8px; }
 
-    /* Typing */
+    /* --- TYPING --- */
     .typing { display: inline-flex; gap: 4px; align-items: center; }
     .dot { width: 6px; height: 6px; border-radius: 50%; background: #9ca3af; opacity: .4; animation: blink 1s infinite; }
     .dot:nth-child(2) { animation-delay: .15s; } .dot:nth-child(3) { animation-delay: .3s; }
     @keyframes blink { 0%,100%{opacity:.2} 50%{opacity:1} }
 
-    /* Input */
+    /* --- INPUT --- */
     .chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #111827; background: #0b0f14; text-align: left; }
-    .chat-input input { 
-      flex: 1; padding: 12px 14px; border: 2px solid var(--brand); border-radius: 12px; 
-      font-size: 14px; background: #0f172a; color: #fff; outline: none; font-family: var(--font); 
-    }
-    
-    /* Input Disabled State (Stop Sign) */
-    .chat-input input:disabled { 
-      opacity: 0.6; 
-      cursor: not-allowed; /* Shows Stop Sign */
-      background: #1f2937;
-    }
-
+    .chat-input input { flex: 1; padding: 12px 14px; border: 2px solid var(--brand); border-radius: 12px; font-size: 14px; background: #0f172a; color: #fff; outline: none; font-family: var(--font); }
+    .chat-input input:disabled { opacity: 0.6; cursor: not-allowed; background: #1f2937; }
     .chat-input button { background: var(--brand); color: #fff; border: none; padding: 0 16px; border-radius: 12px; cursor: pointer; display: grid; place-items: center; font-weight: 700; }
     .chat-input button[disabled] { opacity: .6; cursor: not-allowed; }
     .chat-input button svg { width: 18px; height: 18px; display: block; }
     .spinner { width: 18px; height: 18px; border: 2px solid rgba(255,255,255,.5); border-top-color: #fff; border-radius: 50%; animation: spin 0.8s linear infinite; }
     @keyframes spin { to{ transform: rotate(360deg); } }
 
-    /* Modal */
+    /* --- MODAL --- */
     .modal { position: absolute; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 2000; height: 100%; width: 100%; text-align: left; }
     .modal.open { display: flex; }
     .modal-card { width: min(520px, 92vw); background: #111827; color: #e5e7eb; border-radius: 14px; padding: 14px; box-shadow: var(--shadow); }
@@ -193,7 +164,7 @@
     .btn { background: #374151; color: #e5e7eb; border: none; padding: 6px 10px; border-radius: 8px; cursor: pointer; }
     .btn:hover { background: #4b5563; }
 
-    /* Polls */
+    /* --- POLLS --- */
     .poll { background: #0b1220; border: 1px solid #1f2a44; border-radius: 14px; padding: 14px; margin-top: 6px; text-align: left; }
     .poll-title { font-weight: 700; margin: 4px 6px 10px; color: #cfe3ff; }
     .poll-btn { width: 100%; text-align: left; background: #122034; color: #e5edff; border: 1px solid #20324f; border-radius: 12px; padding: 12px 14px; margin: 10px 0; cursor: pointer; font-family: inherit; }
@@ -201,7 +172,6 @@
   `;
   shadow.appendChild(style);
 
-  // 5. HTML Structure
   const container = document.createElement('div');
   container.innerHTML = `
     <button class="chat-launcher" id="launcher">
@@ -214,7 +184,6 @@
     <div class="chat-panel" id="panel">
       <div class="chat-header">
         <img src="https://dme2wmiz2suov.cloudfront.net/Institution(3815)/Logo/2642439-Group_21.png" alt="Maiyyam" />
-        
         <button class="kebab" id="kebab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
         <div class="menu" id="menu">
           <div class="menu-item" id="newConv">➕ New Conversation</div>
@@ -227,7 +196,6 @@
         <input id="input" placeholder="Type your message..." autocomplete="off" />
         <button type="submit" id="sendBtn"><svg id="sendIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg></button>
       </form>
-      
       <div class="modal" id="prevModal">
         <div class="modal-card">
           <div class="modal-h">Previous Conversations</div>
@@ -242,12 +210,8 @@
   `;
   shadow.appendChild(container);
 
-  // 6. Logic
   const WEBHOOK_URL = 'https://aiagent61999.app.n8n.cloud/webhook/de779a9c-9554-41ca-b95b-446b396b8846';
-  
-  // !!! GITHUB AVATAR IMAGE !!!
   const LOGO = 'https://cdn.jsdelivr.net/gh/Pramodhavg/maiyyam-chatbot-widget@main/avatar.jpeg'; 
-  
   const STORE_KEY = 'maiyyam_conversations_v1';
   const CONFIRM_RE = /(your counselling appointment is confirmed|your appointment has been rescheduled|we look forward to seeing you at maiyyam edtech|appointment (?:has been )?(?:confirmed|booked|scheduled))/i;
   const HANDOFF_DELAY_MS = 1500;
@@ -283,7 +247,6 @@
   let handoffScheduled = false;
 
   function makeSessionId(){ return (globalThis.crypto?.randomUUID?.() ?? String(Date.now())) + '-' + Math.random().toString(36).slice(2,7); }
-  
   function rewriteNumericDateTimeToSlotPick(input) {
     const s = String(input || "");
     const re = /\b(\d{1,2})[\/\-](\d{1,2})(?:[\/\-](\d{2,4}))?\b(?:.*?\b(?:at|by|around)\b)?\s*([0-2]?\d)(?:[.:](\d{2}))?\s*(a\.?m?\.?|p\.?m?\.?|am|pm)?\b/i;
@@ -297,7 +260,6 @@
     const pad = n=>String(n).padStart(2,"0");
     return `SLOT_PICK:${Y}-${pad(M)}-${pad(D)}T${pad(H)}:${pad(MIN)}:00+05:30`;
   }
-
   function showHintDelayed(){
     if (suppressedUntilReopen || panel.classList.contains('open')) return;
     clearTimeout(hintTimer);
@@ -306,7 +268,6 @@
   function hideHint(){ hint.classList.remove('show'); clearTimeout(hintTimer); }
   hintClose.addEventListener('click', (e)=>{ e.stopPropagation(); suppressedUntilReopen = true; hideHint(); });
   showHintDelayed();
-
   function loadConversations(){ try{ return JSON.parse(localStorage.getItem(STORE_KEY) || '{}'); } catch{ return {}; } }
   function saveConversations(){ localStorage.setItem(STORE_KEY, JSON.stringify(conversations)); }
   function startOrResumeConversation(){
@@ -332,7 +293,6 @@
     if (!msgs.length && isFresh === false) addBot("Welcome to Maiyyam. How can we help you?", true, false);
     body.scrollTop = body.scrollHeight;
   }
-
   function addBot(text, store=true, scroll=true){
     const row = document.createElement('div'); row.className = 'row bot';
     row.innerHTML = `<div class="avatar"><img src="${LOGO}" alt="Bot" /></div><div class="content"><div class="name">குறள்</div><div class="bubble">${text}</div></div>`;
@@ -374,22 +334,11 @@
       const label = decodeURIComponent(btn.dataset.slot || ''); sendDirect(label); row.querySelectorAll('button').forEach(b=>b.disabled=true);
     });
   }
-
   function setWaiting(state){
     waiting = state; input.disabled = state; sendBtn.disabled = state;
-    if (state){ 
-      sendIcon.style.display = 'none'; 
-      const sp = document.createElement('div'); 
-      sp.className='spinner'; 
-      sp.id='spinner'; 
-      sendBtn.appendChild(sp); 
-    } else { 
-      shadow.getElementById('spinner')?.remove(); 
-      sendIcon.style.display = ''; 
-      input.focus(); 
-    }
+    if (state){ sendIcon.style.display = 'none'; const sp = document.createElement('div'); sp.className='spinner'; sp.id='spinner'; sendBtn.appendChild(sp); }
+    else { shadow.getElementById('spinner')?.remove(); sendIcon.style.display = ''; input.focus(); }
   }
-
   function togglePanel(){
     const isOpen = !panel.classList.contains('open');
     panel.classList.toggle('open', isOpen);
@@ -491,6 +440,5 @@
     setWaiting(false);
   }
   form.addEventListener('submit', async (e)=>{ e.preventDefault(); if (waiting) return; const text = input.value.trim(); if(!text) return; input.value = ''; await sendDirect(text); });
-  // Final init
   renderMessages(false);
 })();
