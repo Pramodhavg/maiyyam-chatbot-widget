@@ -2,25 +2,25 @@
   // Prevent duplicate loads
   if (document.getElementById('maiyyam-widget-host')) return;
 
-  // 1. Create Host Element (The Container)
+  // 1. Create Host Element
   const host = document.createElement('div');
   host.id = 'maiyyam-widget-host';
   host.style.position = 'fixed';
   host.style.bottom = '0';
   host.style.right = '0';
-  host.style.zIndex = '2147483647'; // Max z-index to stay on top
+  host.style.zIndex = '2147483647';
   document.body.appendChild(host);
 
-  // 2. Attach Shadow DOM (The Force Field)
+  // 2. Attach Shadow DOM
   const shadow = host.attachShadow({ mode: 'open' });
 
-  // 3. Inject Font (Must be in main head to load correctly)
+  // 3. Inject Fonts
   const fontLink = document.createElement('link');
-  fontLink.href = 'https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@600&display=swap';
+  fontLink.href = 'https://fonts.googleapis.com/css2?family=Baloo+Thambi+2:wght@600&family=Inter:wght@400;600;700&display=swap';
   fontLink.rel = 'stylesheet';
   document.head.appendChild(fontLink);
 
-  // 4. Widget Styles (Scoped inside Shadow DOM)
+  // 4. Styles
   const style = document.createElement('style');
   style.textContent = `
     :host {
@@ -33,15 +33,15 @@
       --shadow: 0 18px 50px rgba(0,0,0,.18);
       --w: 400px;
       --w-m: calc(100vw - 32px);
-      --h: 60vh;
+      --h: 60vh; /* Restored original height */
       --bubblew: 82%;
-      --font: "Inter", "Poppins", "Helvetica Neue", Arial, sans-serif;
+      --font: "Inter", "Poppins", sans-serif;
       --font-tamil: 'Baloo Thambi 2', cursive, sans-serif;
     }
     
     * { box-sizing: border-box; }
 
-    /* Launcher */
+    /* Launcher - Pure CSS/SVG */
     .chat-launcher {
       position: fixed; right: 22px; bottom: 22px;
       width: 60px; height: 60px; border-radius: 50%;
@@ -53,6 +53,7 @@
     .chat-launcher:hover { transform: scale(1.05); }
     .chat-launcher svg { width: 28px; height: 28px; display: block; }
     
+    /* Toggle Logic */
     .icon-open { display: block; }
     .icon-close { display: none; }
     .chat-launcher.open .icon-open { display: none; }
@@ -100,6 +101,15 @@
       background: var(--brand); color: #fff; height: 56px;
       padding: 0 16px; display: flex; align-items: center; flex-shrink: 0; position: relative;
     }
+    
+    /* Header Logo (Maiyyam) */
+    .chat-header img { 
+      height: 30px; 
+      width: auto; 
+      object-fit: contain; 
+      display: block; 
+    }
+    
     .spacer { flex: 1; }
     .kebab {
       width: 34px; height: 34px; border-radius: 8px; border: none;
@@ -130,7 +140,7 @@
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .content { max-width: var(--bubblew); }
-    /* Name (Baloo Thambi 2) */
+    /* Name (Tamil Font) */
     .name { font-family: var(--font-tamil); font-size: 13px; font-weight: 600; color: #9ca3af; margin: 0 0 2px 6px; }
     
     .bubble { padding: 12px 14px; border-radius: 14px; line-height: 1.45; font-size: 14px; word-wrap: break-word; white-space: pre-wrap; box-shadow: 0 1px 0 rgba(0,0,0,.25); }
@@ -178,14 +188,15 @@
   const container = document.createElement('div');
   container.innerHTML = `
     <button class="chat-launcher" id="launcher">
-      <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8z"/></svg>
-      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M6 6l12 12M18 6l-12 12"/></svg>
+      <svg class="icon-open" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4v8z"/></svg>
+      <svg class="icon-close" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 6l12 12M18 6l-12 12"/></svg>
     </button>
 
     <div class="hint" id="hint">Hi there! Need clarity? <div class="hint-close" id="hintClose">×</div></div>
 
     <div class="chat-panel" id="panel">
       <div class="chat-header">
+        <img src="https://dme2wmiz2suov.cloudfront.net/Institution(3815)/Logo/2642439-Group_21.png" alt="Maiyyam" />
         <div class="spacer"></div>
         <button class="kebab" id="kebab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
         <div class="menu" id="menu">
@@ -197,7 +208,7 @@
       <div class="chat-body" id="body"></div>
       <form class="chat-input" id="form">
         <input id="input" placeholder="Type your message..." autocomplete="off" />
-        <button type="submit" id="sendBtn"><svg id="sendIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor"><path stroke-width="2" d="M22 2L11 13" /><path stroke-width="2" d="M22 2l-7 20-4-9-9-4 20-7z" /></svg></button>
+        <button type="submit" id="sendBtn"><svg id="sendIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 2L11 13" /><path d="M22 2l-7 20-4-9-9-4 20-7z" /></svg></button>
       </form>
       
       <div class="modal" id="prevModal">
@@ -217,14 +228,14 @@
   // 6. Logic
   const WEBHOOK_URL = 'https://aiagent61999.app.n8n.cloud/webhook/de779a9c-9554-41ca-b95b-446b396b8846';
   
-  // !!! UPDATE THIS LINK TO YOUR PUBLIC AVATAR URL ON GITHUB !!!
-  const LOGO = 'https://cdn.jsdelivr.net/gh/Pramodhavg/maiyyam-chatbot-widget@main/avatar.jpeg';; 
+  // !!! GITHUB AVATAR IMAGE !!!
+  // Ensure 'avatar.jpeg' is uploaded to your GitHub repo
+  const LOGO = 'https://cdn.jsdelivr.net/gh/Pramodhavg/maiyyam-chatbot-widget@main/avatar.jpeg'; 
   
   const STORE_KEY = 'maiyyam_conversations_v1';
   const CONFIRM_RE = /(your counselling appointment is confirmed|your appointment has been rescheduled|we look forward to seeing you at maiyyam edtech|appointment (?:has been )?(?:confirmed|booked|scheduled))/i;
   const HANDOFF_DELAY_MS = 1500;
 
-  // Helper to select from shadow DOM
   const get = (id) => shadow.getElementById(id);
   const panel = get('panel');
   const launcher = get('launcher');
@@ -286,12 +297,12 @@
     const ids = Object.keys(conversations);
     if (ids.length) return ids[ids.length-1];
     const id = String(Date.now());
-    conversations[id] = { id, title:'Conversation', createdAt:Date.now(), messages:[{role:'bot',text:'Welcome to Kural. How can we help you?',t:Date.now()}] };
+    conversations[id] = { id, title:'Conversation', createdAt:Date.now(), messages:[{role:'bot',text:'Welcome to Maiyyam. How can we help you?',t:Date.now()}] };
     saveConversations(); return id;
   }
   function startNewConversation(){
     const id = String(Date.now());
-    conversations[id] = { id, title:'Conversation', createdAt:Date.now(), messages:[{role:'bot',text:'Welcome to Kural. How can we help you?',t:Date.now()}] };
+    conversations[id] = { id, title:'Conversation', createdAt:Date.now(), messages:[{role:'bot',text:'Welcome to Maiyyam. How can we help you?',t:Date.now()}] };
     saveConversations();
     currentId = id; sessionId = makeSessionId();
     awaitingProceed = false; followupUsed = false; handoffScheduled = false;
@@ -302,7 +313,7 @@
     body.innerHTML = '';
     const msgs = conversations[currentId]?.messages || [];
     for (const m of msgs){ (m.role==='user') ? addUser(m.text,false) : addBot(m.text,false); }
-    if (!msgs.length && isFresh === false) addBot("Welcome to Kural. How can we help you?", true, false);
+    if (!msgs.length && isFresh === false) addBot("Welcome to Maiyyam. How can we help you?", true, false);
     body.scrollTop = body.scrollHeight;
   }
 
