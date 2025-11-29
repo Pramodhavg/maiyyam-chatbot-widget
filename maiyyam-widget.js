@@ -32,17 +32,19 @@
       --radius: 16px;
       --shadow: 0 18px 50px rgba(0,0,0,.18);
       --w: 400px;
-      /* INCREASED HEIGHT HERE */
-      --h: 600px; 
       --w-m: calc(100vw - 32px);
+      --h: 600px; /* TALL WINDOW */
       --bubblew: 82%;
       --font: "Inter", "Poppins", sans-serif;
       --font-tamil: 'Baloo Thambi 2', cursive, sans-serif;
+      
+      /* FORCE RESET ALIGNMENT */
+      text-align: left;
     }
     
     * { box-sizing: border-box; }
 
-    /* Launcher - Pure SVG (No external image to break) */
+    /* Launcher */
     .chat-launcher {
       position: fixed; right: 22px; bottom: 22px;
       width: 60px; height: 60px; border-radius: 50%;
@@ -65,7 +67,7 @@
       background: #0f172a; color: #fff; font-family: var(--font); font-size: 14px;
       padding: 10px 30px 10px 12px; border-radius: 12px;
       box-shadow: var(--shadow); display: none; white-space: nowrap;
-      z-index: 1200;
+      z-index: 1200; text-align: left;
     }
     .hint.show { display: block; animation: fadein .22s ease-out; }
     .hint::after {
@@ -81,15 +83,15 @@
     }
     @keyframes fadein { from{opacity:0; transform:translateY(4px);} to{opacity:1; transform:translateY(0);} }
 
-    /* Panel - Forced Height */
+    /* Panel */
     .chat-panel {
       position: fixed; right: 22px; bottom: 96px;
-      width: var(--w); height: var(--h);
-      max-height: 80vh; /* Responsive safety */
+      width: var(--w); max-width: var(--w); height: var(--h);
       background: var(--panel); border-radius: var(--radius);
       box-shadow: var(--shadow); overflow: hidden;
       display: none; flex-direction: column;
       border: 1px solid #f1f5f9; font-family: var(--font); z-index: 1100;
+      text-align: left; /* Force Left Alignment */
     }
     .chat-panel.open { display: flex; }
     
@@ -100,8 +102,13 @@
     /* Header */
     .chat-header {
       background: var(--brand); color: #fff; height: 56px;
-      padding: 0 16px; display: flex; align-items: center; flex-shrink: 0; position: relative;
+      padding: 0 16px; 
+      display: flex; 
+      align-items: center; 
+      justify-content: space-between; /* Force items to edges */
+      flex-shrink: 0; position: relative;
     }
+    
     .chat-header img { 
       height: 30px; 
       width: auto; 
@@ -109,11 +116,12 @@
       display: block; 
     }
     
-    .spacer { flex: 1; }
+    /* Removed spacer, using justify-content: space-between instead */
+    
     .kebab {
       width: 34px; height: 34px; border-radius: 8px; border: none;
       color: #fff; background: rgba(255,255,255,.16); cursor: pointer;
-      display: grid; place-items: center; margin-left: 10px;
+      display: grid; place-items: center; margin-left: auto; /* Push to right */
     }
     .kebab svg { width: 20px; height: 20px; }
 
@@ -122,6 +130,7 @@
       position: absolute; top: 60px; right: 16px; width: 220px;
       background: #1f2937; color: #e5e7eb; border-radius: 12px;
       padding: 6px; box-shadow: var(--shadow); display: none; z-index: 1300;
+      text-align: left;
     }
     .menu.open { display: block; }
     .menu-item { display: flex; gap: 10px; align-items: center; padding: 10px; border-radius: 8px; cursor: pointer; font-size: 14px; }
@@ -129,20 +138,19 @@
     .menu-hr { height: 1px; background: #374151; margin: 4px 6px; }
 
     /* Body */
-    .chat-body { flex: 1; overflow-y: auto; padding: 16px; background: var(--bg); color: #fff; }
-    .row { display: flex; gap: 10px; margin: 12px 0; }
+    .chat-body { flex: 1; overflow-y: auto; padding: 16px; background: var(--bg); color: #fff; text-align: left; }
+    .row { display: flex; gap: 10px; margin: 12px 0; width: 100%; }
     .row.bot { justify-content: flex-start; }
     .row.user { justify-content: flex-end; }
 
-    /* Avatar (Small) */
+    /* Avatar */
     .avatar { width: 28px; height: 28px; border-radius: 50%; overflow: hidden; flex: 0 0 auto; background: #fff; border: 1px solid #e5e7eb; }
     .avatar img { width: 100%; height: 100%; object-fit: cover; }
 
     .content { max-width: var(--bubblew); }
-    /* Name (Tamil Font) */
-    .name { font-family: var(--font-tamil); font-size: 13px; font-weight: 600; color: #9ca3af; margin: 0 0 2px 6px; }
+    .name { font-family: var(--font-tamil); font-size: 13px; font-weight: 600; color: #9ca3af; margin: 0 0 2px 6px; text-align: left; }
     
-    .bubble { padding: 12px 14px; border-radius: 14px; line-height: 1.45; font-size: 14px; word-wrap: break-word; white-space: pre-wrap; box-shadow: 0 1px 0 rgba(0,0,0,.25); }
+    .bubble { padding: 12px 14px; border-radius: 14px; line-height: 1.45; font-size: 14px; word-wrap: break-word; white-space: pre-wrap; box-shadow: 0 1px 0 rgba(0,0,0,.25); text-align: left; }
     .bot .bubble { background: #111f2c; color: #dbeafe; border-top-left-radius: 8px; }
     .user .bubble { background: var(--brand); color: #fff; border-top-right-radius: 8px; }
 
@@ -153,7 +161,7 @@
     @keyframes blink { 0%,100%{opacity:.2} 50%{opacity:1} }
 
     /* Input */
-    .chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #111827; background: #0b0f14; }
+    .chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #111827; background: #0b0f14; text-align: left; }
     .chat-input input { flex: 1; padding: 12px 14px; border: 2px solid var(--brand); border-radius: 12px; font-size: 14px; background: #0f172a; color: #fff; outline: none; font-family: var(--font); }
     .chat-input button { background: var(--brand); color: #fff; border: none; padding: 0 16px; border-radius: 12px; cursor: pointer; display: grid; place-items: center; font-weight: 700; }
     .chat-input button[disabled] { opacity: .6; cursor: not-allowed; }
@@ -162,7 +170,7 @@
     @keyframes spin { to{ transform: rotate(360deg); } }
 
     /* Modal */
-    .modal { position: absolute; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 2000; height: 100%; width: 100%; }
+    .modal { position: absolute; inset: 0; background: rgba(0,0,0,.5); display: none; align-items: center; justify-content: center; z-index: 2000; height: 100%; width: 100%; text-align: left; }
     .modal.open { display: flex; }
     .modal-card { width: min(520px, 92vw); background: #111827; color: #e5e7eb; border-radius: 14px; padding: 14px; box-shadow: var(--shadow); }
     .modal-h { font-weight: 800; margin: 4px 0 10px 2px; }
@@ -176,7 +184,7 @@
     .btn:hover { background: #4b5563; }
 
     /* Polls */
-    .poll { background: #0b1220; border: 1px solid #1f2a44; border-radius: 14px; padding: 14px; margin-top: 6px; }
+    .poll { background: #0b1220; border: 1px solid #1f2a44; border-radius: 14px; padding: 14px; margin-top: 6px; text-align: left; }
     .poll-title { font-weight: 700; margin: 4px 6px 10px; color: #cfe3ff; }
     .poll-btn { width: 100%; text-align: left; background: #122034; color: #e5edff; border: 1px solid #20324f; border-radius: 12px; padding: 12px 14px; margin: 10px 0; cursor: pointer; font-family: inherit; }
     .poll-btn:hover { background: #162742; }
@@ -196,7 +204,7 @@
     <div class="chat-panel" id="panel">
       <div class="chat-header">
         <img src="https://dme2wmiz2suov.cloudfront.net/Institution(3815)/Logo/2642439-Group_21.png" alt="Maiyyam" />
-        <div class="spacer"></div>
+        
         <button class="kebab" id="kebab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
         <div class="menu" id="menu">
           <div class="menu-item" id="newConv">➕ New Conversation</div>
@@ -228,7 +236,7 @@
   const WEBHOOK_URL = 'https://aiagent61999.app.n8n.cloud/webhook/de779a9c-9554-41ca-b95b-446b396b8846';
   
   // !!! GITHUB AVATAR IMAGE !!!
-  // Ensure 'avatar.jpeg' is uploaded to your GitHub repo
+  // Replace this with your actual avatar URL
   const LOGO = 'https://cdn.jsdelivr.net/gh/Pramodhavg/maiyyam-chatbot-widget@main/avatar.jpeg'; 
   
   const STORE_KEY = 'maiyyam_conversations_v1';
