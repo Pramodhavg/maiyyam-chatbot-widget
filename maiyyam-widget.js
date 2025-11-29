@@ -1,14 +1,3 @@
-I see the "compressed" window and the broken chat bubble issue.
-
-1.  **Window Size:** I have increased the height variables significantly (`--h: 600px`) and `min-height` to force it to look tall and spacious like your 3rd picture.
-2.  **Broken Chat Bubble (X icon):** The `<img>` tag for the launcher icon is failing to load because it cannot find the file, so it shows the "broken image" icon (which looks like a small box/cross).
-      * **The Fix:** Since you want the original white bubble (SVG), I am removing the `<img>` tag completely and putting the raw SVG code back. This guarantees the bubble icon will **always** show up perfectly, no image file needed.
-
-### 🚀 Updated `maiyyam-widget.js` (Final Fix)
-
-Replace your GitHub file content with this code.
-
-```javascript
 (function() {
   // Prevent duplicate loads
   if (document.getElementById('maiyyam-widget-host')) return;
@@ -479,4 +468,3 @@ Replace your GitHub file content with this code.
   // Final init
   renderMessages(false);
 })();
-```
