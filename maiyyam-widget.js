@@ -218,7 +218,7 @@
   const WEBHOOK_URL = 'https://aiagent61999.app.n8n.cloud/webhook/de779a9c-9554-41ca-b95b-446b396b8846';
   
   // !!! UPDATE THIS LINK TO YOUR PUBLIC AVATAR URL ON GITHUB !!!
-  const LOGO = 'avatar.jpeg'; 
+  const LOGO = 'https://cdn.jsdelivr.net/gh/Pramodhavg/maiyyam-chatbot-widget@main/avatar.jpeg';; 
   
   const STORE_KEY = 'maiyyam_conversations_v1';
   const CONFIRM_RE = /(your counselling appointment is confirmed|your appointment has been rescheduled|we look forward to seeing you at maiyyam edtech|appointment (?:has been )?(?:confirmed|booked|scheduled))/i;
