@@ -180,7 +180,7 @@
 
     <div class="chat-panel" id="panel">
       <div class="chat-header">
-        <img src="https://cdn.jsdelivr.net/gh/Pramodhavg/maiyyam-chatbot-widget@main/header-logo.jpg" alt="Maiyyam" />
+        <img src="https://cdn.jsdelivr.net/gh/Pramodhavg/maiyyam-chatbot-widget@fced9fd/header-logo.jpg" alt="Maiyyam" />
         <button class="kebab" id="kebab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
         <div class="menu" id="menu">
           <div class="menu-item" id="newConv">➕ New Conversation</div>
