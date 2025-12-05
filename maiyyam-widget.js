@@ -23,7 +23,7 @@
       --text: #e5e7eb;
       --muted: #1f2937;
       --bg: #0b0f14;
-      --panel: #0b0f14; /* CHANGED: Was #ffffff, now dark to prevent white gaps */
+      --panel: #0b0f14;
       --radius: 16px;
       --shadow: 0 18px 50px rgba(0,0,0,.18);
       --w: 400px;
@@ -36,7 +36,7 @@
     }
     * { box-sizing: border-box; }
 
-    /* --- LAUNCHER FIX --- */
+    /* --- LAUNCHER --- */
     .chat-launcher {
       position: fixed; right: 22px; bottom: 22px;
       width: 60px; height: 60px; border-radius: 50%;
@@ -47,11 +47,8 @@
     }
     .chat-launcher:hover { transform: scale(1.05); }
 
-    /* Force specific visibility rules */
     .chat-launcher .icon-open { display: block; width: 28px; height: 28px; }
     .chat-launcher .icon-close { display: none; width: 28px; height: 28px; }
-
-    /* When open class is added, flip visibility */
     .chat-launcher.open .icon-open { display: none; }
     .chat-launcher.open .icon-close { display: block; }
 
@@ -98,7 +95,9 @@
       padding: 0 16px; display: flex; align-items: center; 
       justify-content: space-between; flex-shrink: 0; position: relative;
     }
-    .chat-header img { height: 30px; width: auto; object-fit: contain; display: block; }
+    /* Logo sizing: adjusted to fit new image better */
+    .chat-header img { height: 40px; width: auto; object-fit: contain; display: block; }
+    
     .kebab {
       width: 34px; height: 34px; border-radius: 8px; border: none;
       color: #fff; background: rgba(255,255,255,.16); cursor: pointer;
@@ -183,7 +182,7 @@
 
     <div class="chat-panel" id="panel">
       <div class="chat-header">
-        <img src="https://dme2wmiz2suov.cloudfront.net/Institution(3815)/Logo/2642439-Group_21.png" alt="Maiyyam" />
+        <img src="https://cdn.jsdelivr.net/gh/Pramodhavg/maiyyam-chatbot-widget@main/header-logo.jpg" alt="Maiyyam" />
         <button class="kebab" id="kebab"><svg viewBox="0 0 24 24" fill="currentColor"><circle cx="5" cy="12" r="2"/><circle cx="12" cy="12" r="2"/><circle cx="19" cy="12" r="2"/></svg></button>
         <div class="menu" id="menu">
           <div class="menu-item" id="newConv">➕ New Conversation</div>
