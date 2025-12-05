@@ -95,9 +95,7 @@
       padding: 0 16px; display: flex; align-items: center; 
       justify-content: space-between; flex-shrink: 0; position: relative;
     }
-    /* Logo sizing: adjusted to fit new image better */
-    .chat-header img { height: 40px; width: auto; object-fit: contain; display: block; }
-    
+    .chat-header img { height: 32px; width: auto; object-fit: contain; display: block; }
     .kebab {
       width: 34px; height: 34px; border-radius: 8px; border: none;
       color: #fff; background: rgba(255,255,255,.16); cursor: pointer;
