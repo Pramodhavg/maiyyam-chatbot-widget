@@ -23,7 +23,7 @@
       --text: #e5e7eb;
       --muted: #1f2937;
       --bg: #0b0f14;
-      --panel: #ffffff;
+      --panel: #0b0f14; /* CHANGED: Was #ffffff, now dark to prevent white gaps */
       --radius: 16px;
       --shadow: 0 18px 50px rgba(0,0,0,.18);
       --w: 400px;
@@ -141,7 +141,7 @@
     @keyframes blink { 0%,100%{opacity:.2} 50%{opacity:1} }
 
     /* --- INPUT --- */
-    .chat-input { display: flex; gap: 8px; padding: 12px; border-top: 1px solid #111827; background: #0b0f14; text-align: left; }
+    .chat-input { display: flex; gap: 8px; padding: 12px; margin: 0; border-top: 1px solid #111827; background: #0b0f14; text-align: left; }
     .chat-input input { flex: 1; padding: 12px 14px; border: 2px solid var(--brand); border-radius: 12px; font-size: 14px; background: #0f172a; color: #fff; outline: none; font-family: var(--font); }
     .chat-input input:disabled { opacity: 0.6; cursor: not-allowed; background: #1f2937; }
     .chat-input button { background: var(--brand); color: #fff; border: none; padding: 0 16px; border-radius: 12px; cursor: pointer; display: grid; place-items: center; font-weight: 700; }
